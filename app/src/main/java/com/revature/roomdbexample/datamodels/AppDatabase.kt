@@ -18,7 +18,7 @@ abstract class AppDatabase: RoomDatabase(){
                 return tempInstance
             }
             synchronized(lock = this) {
-                var instance = Room.databaseBuilder(context.applicationContext,
+                val instance = Room.databaseBuilder(context.applicationContext,
                 AppDatabase::class.java,"ExampleDatabase").build()
 
                 INSTANCE = instance
