@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.revature.roomdbexample.CustomerViewModel
 import com.revature.roomdbexample.view.AddCustomerScreen
+import com.revature.roomdbexample.view.UpdateCustomer
 
 @Composable
 fun startNav(customerViewModel: CustomerViewModel){
@@ -16,6 +17,9 @@ fun startNav(customerViewModel: CustomerViewModel){
 
         composable(Screens.AddCustomerScreen.route){
             AddCustomerScreen(navController, customerViewModel)
+        }
+        composable(Screens.UpdateCustomerScreen.route){
+            UpdateCustomer(navController,customerViewModel)
         }
     }
 }

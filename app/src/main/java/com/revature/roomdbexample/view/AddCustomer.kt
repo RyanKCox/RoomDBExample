@@ -5,15 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -21,20 +19,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.revature.roomdbexample.CustomerViewModel
 import com.revature.roomdbexample.datamodels.Customer
 import com.revature.roomdbexample.R
 
 @Composable
-fun AddCustomerScreen(navController: NavController, customerViewModel: CustomerViewModel){
+fun AddCustomerScreen(navController: NavController,
+                      customerViewModel: CustomerViewModel){
     
     val customerList = customerViewModel.fetchAllCustomers().observeAsState(arrayListOf())
+
 
     Surface( color = MaterialTheme.colors.background,
     modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally) {
+
+            TopAppBar(title = {Text("Customer List")})
 
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,12 +47,9 @@ fun AddCustomerScreen(navController: NavController, customerViewModel: CustomerV
                     )
             ) {
 
-                if (customerList != null) {
-                    items(customerList.value.size) {
-                        DisplayCustomer(customerViewModel,customerList.value.get(it))
-                    }
+                items(customerList.value) {
+                    DisplayCustomer(navController,customerViewModel, it,true)
                 }
-
             }
             customerCreation(customerViewModel = customerViewModel)
         }
@@ -59,15 +57,23 @@ fun AddCustomerScreen(navController: NavController, customerViewModel: CustomerV
 }
 
 @Composable
-fun DisplayCustomer(customerViewModel: CustomerViewModel, customer:Customer){
+fun DisplayCustomer(navController: NavController,
+                    customerViewModel: CustomerViewModel,
+                    customer:Customer,
+                    bDelete:Boolean = false){
 
     Row(modifier = Modifier
         .fillMaxWidth(.8f)
         .border(
             width = 5.dp,
             MaterialTheme.colors.onBackground,
-            shape = RoundedCornerShape(5.dp)
-        )) {
+            shape = RoundedCornerShape(5.dp))
+        .clickable {
+            if (bDelete) {
+                customerViewModel.focusCustomer = customer
+                navController.navigate(route = "UpdateCustomerScreen")
+            }
+        }) {
 
         Image(painter = painterResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = null,
@@ -92,7 +98,7 @@ fun DisplayCustomer(customerViewModel: CustomerViewModel, customer:Customer){
                 style = MaterialTheme.typography.body1)
         }
 
-        Column {
+        Column(modifier = Modifier.fillMaxWidth(.7f)) {
 
             Text(text = customer.name?:"Not Loaded",
                 modifier = Modifier.padding(5.dp),
@@ -110,12 +116,16 @@ fun DisplayCustomer(customerViewModel: CustomerViewModel, customer:Customer){
                 modifier = Modifier.padding(5.dp),
                 style = MaterialTheme.typography.body1)
         }
-        Image(painter = painterResource(id = R.drawable.red_x_icon),
-            contentDescription = null,
-        modifier = Modifier.size(40.dp)
-            .clickable {
-                customerViewModel.deleteCustomerById(customer.id)
-            })
+        if(bDelete) {
+
+            Image(painter = painterResource(id = R.drawable.red_x_icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        customerViewModel.deleteCustomerById(customer.id)
+                    })
+        }
 
     }
 }
@@ -166,8 +176,6 @@ fun customerCreation(customerViewModel:CustomerViewModel){
                 .height(60.dp)
                 .padding(16.dp, 0.dp, 16.dp, 0.dp)) {
             Text(text = "Create User")
-
-
     }
 }
 

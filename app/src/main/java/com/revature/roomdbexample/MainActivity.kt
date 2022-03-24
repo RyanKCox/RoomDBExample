@@ -17,7 +17,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val customerViewModel = CustomerViewModel(this.application)
+        //Declare application level variables
+        //val customerViewModel = CustomerViewModel(this.application)
+        val customerViewModel = ViewModelProvider(this).get(
+            CustomerViewModel::class.java)
 
         setContent {
             RoomDBExampleTheme {
@@ -27,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     startNav(customerViewModel)
-
                 }
             }
         }

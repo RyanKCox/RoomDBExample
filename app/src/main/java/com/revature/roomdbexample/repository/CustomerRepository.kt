@@ -25,4 +25,10 @@ class CustomerRepository(application:Application) {
     suspend fun insertCustomer(customer:Customer){
         customerDao.insertCustomer(customer)
     }
+
+    suspend fun updateCustomerById(id:Int, sName:String, sGender:String, sEmail:String){
+        customerDao.updateCustomerNameById(id = id,sName = sName)
+        customerDao.updateCustomerGenderById(id = id, sGender = sGender)
+        customerDao.updateCustomerEmailById(id = id,sEmail = sEmail)
+    }
 }
